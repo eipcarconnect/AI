@@ -1,3 +1,8 @@
+.idea
+inputs
+cmake-build-debug
+
+
 # Prerequisites
 *.d
 
