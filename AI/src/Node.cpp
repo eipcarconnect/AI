@@ -4,17 +4,18 @@
 
 #include <cmath>
 #include "Node.hpp"
+#include "Connection.hpp"
 
-Node::Node() {
+Node::Node(unsigned int id): id(id) {
 
 }
 
 void Node::activate() {
-	totalPower = 0;
-	for (auto &item : connectedAt) {
-		totalPower += item->getWeight();
+	value = 0;
+	for (auto &item : connectedFrom) {
+		value += item->getWeight();
 	}
-	activated = totalPower/(1.0 + fabs(totalPower));
+	activated = value/(1.0 + fabs(value));
 }
 
 double Node::getActivated() {

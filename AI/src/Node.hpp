@@ -5,21 +5,33 @@
 #pragma once
 
 
-#include "Connection.hpp"
+//#include "Connection.hpp"
+#include <memory>
 #include <list>
+
+class Connection;
 
 class Node {
 public:
-	Node();
+	Node() = default;
+	Node(unsigned int id);
 
 	void activate();
 
 	double	getActivated();
 
 public:
-	std::list<std::shared_ptr<Connection>>	connectedAt;
+	unsigned int	id;
+
+	std::list<std::shared_ptr<Connection>>	connectedFrom;
 	std::list<std::shared_ptr<Connection>>	connectedTo;
 
-	double	totalPower;
+	double	value;
 	double	activated;
+
+	unsigned int	nbConnectedTo;
+	unsigned int	totalConnectedTo;
+
+	unsigned int	nbConnectedFrom;
+	unsigned int	totalConnectedFrom;
 };

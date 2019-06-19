@@ -5,20 +5,33 @@
 #pragma once
 
 #include "Node.hpp"
+#include "Connection.hpp"
 #include "NeuralData.hpp"
-#include <queue>
+#include <unordered_map>
+#include <vector>
+#include <list>
+
 
 class NeuralNetwork {
 public:
 	NeuralNetwork(NNConfiguration config);
 
-	void updateInput(std::vector<double> &newInputs);
+	/// Functions for usage
+	void				setInput(std::vector<double> &newInputs);
+	void				update();
+	std::vector<double>	getOutput();
+
+	/// Functions for learning
+	void				createRandomConnection();
 
 
 public:
-	NNConfiguration				config;
-	size_t					id;
+	NNConfiguration		config;
+	size_t				id;
 
-	std::list<std::shared_ptr<Node>>	nodes;
-	std::list<std::shared_ptr<Connection>>	connections;
+	std::unordered_map<unsigned int, std::shared_ptr<Node>>		nodes;
+	std::list<std::shared_ptr<Connection>>						connections;
 };
+
+typedef decltype(NeuralNetwork::nodes.begin()) itN;
+typedef decltype(NeuralNetwork::connections.begin()) itC;

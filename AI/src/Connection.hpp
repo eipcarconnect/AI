@@ -4,12 +4,13 @@
 
 #pragma once
 
-#include <bits/shared_ptr.h>
+#include <memory>
 
 class Node;
 
 class Connection {
 public:
+	Connection() = default;
 	Connection(std::shared_ptr<Node> &from, std::shared_ptr<Node> &to, double weight = 0.0);
 
 	double	getWeight();
