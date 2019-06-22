@@ -7,7 +7,6 @@
 #include "Connection.hpp"
 
 Node::Node(unsigned int id): id(id) {
-
 }
 
 void Node::activate() {

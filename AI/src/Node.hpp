@@ -8,6 +8,7 @@
 //#include "Connection.hpp"
 #include <memory>
 #include <list>
+#include <iostream>
 
 class Connection;
 
