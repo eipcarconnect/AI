@@ -34,11 +34,9 @@ void NeuralNetwork::setInput(std::vector<double> &newInputs) {
 void NeuralNetwork::update() {
 	std::deque < std::shared_ptr < Node > > queue;
 	std::shared_ptr < Node >	elem;
-	itN it = nodes.begin();
 
 	for(int i = 0; i < config.input; ++i) {
 		queue.emplace_back(nodes[i]);
-		++it;
 	}
 
 	while(!queue.empty()) {
@@ -80,8 +78,13 @@ void NeuralNetwork::createRandomConnection() {
 
 
 	while (looping) {
+		BEGIN:
 		from = getRandomNodeFrom();
 		to = getRandomNodeTo();
+		for (const auto &item : from->connectedTo) {
+			if (item->to->id == to->id)
+				goto BEGIN;
+		}
 		looping = false;
 		queue.push_back(to);
 		while(!queue.empty()) {
@@ -107,6 +110,19 @@ void NeuralNetwork::createRandomConnection() {
 	connections.emplace_back(newConnection);
 }
 
+void NeuralNetwork::createRandomNode() {
+	if (connections.empty())
+		return;
+
+	std::uniform_int_distribution<int> intg(0, connections.size() - 1);
+	SConnection connection;
+	SNode		node(new Node(++id));
+
+	auto it = connections.begin();
+	int conn = intg(gene);
+	for (int i = 0; i < conn; ++i, ++it);
+}
+
 std::shared_ptr<Node> NeuralNetwork::getRandomNodeFrom() {
 	std::uniform_int_distribution<int>		intg(0, nodes.size() - config.output - 1);
 	int rand = intg(gene);
@@ -122,3 +138,4 @@ std::shared_ptr<Node> NeuralNetwork::getRandomNodeTo() {
 
 	return nodes[rand];
 }
+

@@ -24,6 +24,7 @@ public:
 
 	/// Functions for learning
 	void				createRandomConnection();
+	void				createRandomNode();
 
 /// Tools to make code more readable
 private:
@@ -43,5 +44,5 @@ public:
 	std::uniform_real_distribution<double>	doubleg;
 };
 
-typedef decltype(NeuralNetwork::nodes.begin()) itN;
-typedef decltype(NeuralNetwork::connections.begin()) itC;
+typedef std::shared_ptr<Node> SNode;
+typedef std::shared_ptr<Connection> SConnection;
