@@ -121,6 +121,14 @@ void NeuralNetwork::createRandomNode() {
 	auto it = connections.begin();
 	int conn = intg(gene);
 	for (int i = 0; i < conn; ++i, ++it);
+
+	/// Creatting the new Node
+
+	/// Creating the new connection with TO to the previos
+
+	/// Changing the changed connection TO
+
+
 }
 
 std::shared_ptr<Node> NeuralNetwork::getRandomNodeFrom() {
