@@ -1,6 +1,7 @@
 .idea
 InputGen/inputs
 cmake-build-debug
+build-Server*
 
 
 # Prerequisites
