@@ -17,24 +17,32 @@ Server::Server(QObject *parent) : QObject(parent), websocket(new QWebSocketServe
 
     connect(tcp.data(), &QTcpServer::newConnection, [this](){
         this->tcp->nextPendingConnection();
-        std::cout << "nouveau training ai";
+        std::cout << "nouveau training ai" << std::endl;
     });
 }
 
 void Server::timerEvent(QTimerEvent *)
 {
+	static int moy = 100;
     static int i = 0;
     QJsonObject json;
 
     json.insert("label", i);
     ++i;
-    int tmp = rand();
-    json.insert("data", tmp);
+    int max = rand() % 100 + moy;
+    int min = moy - (rand() % 100);
+    int nbmin = rand() % 8 + 1;
+    int nbmax = rand() % 10 + 1;
+    int moye = (min * nbmin + max * nbmax) / (nbmin + nbmax) ;
+    moy = moye;
+    json.insert("max", max);
+    json.insert("min", min);
+    json.insert("moy", moye);
 
     QJsonDocument doc(json);
     QString strJson(doc.toJson(QJsonDocument::Compact));
     for(auto webclient : webClients) {
         webclient->sendTextMessage(doc.toJson(QJsonDocument::Compact));
-        std::cout << tmp << std::endl;
+        std::cout << moye <<' ' << max<< ' ' << min << std::endl;
     }
 }

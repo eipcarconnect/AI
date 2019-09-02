@@ -5,7 +5,9 @@
 #pragma once
 
 #include <memory>
+#include <fstream>
 
+class NeuralNetwork;
 class Node;
 
 class Connection {
@@ -15,6 +17,8 @@ public:
 
 	double	getWeight();
 
+	void	save(std::ofstream &stream);
+	void	load(std::ifstream &stream, NeuralNetwork &network);
 
 public:
 	std::shared_ptr<Node>	from;

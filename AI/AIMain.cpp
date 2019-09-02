@@ -21,8 +21,10 @@ int main() {
 
 	neat.setInput(in);
 	neat.update();
+	neat.save("test.dat");
 	auto out = neat.getOutput();
 
+	std::cout << "je suis un test" << std::endl;
 	for (const auto &item : out) {
 		std::cout << item << " ";
 	}

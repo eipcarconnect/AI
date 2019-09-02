@@ -76,6 +76,7 @@ var options = {
     series: [{
         name: 'Average Fitness',
         data: [],
+        // type: 'spline',
         zIndex: 1,
         marker: {
             fillColor: 'white',
@@ -85,6 +86,7 @@ var options = {
     }, {
         name: 'Range Fitness',
         data: [],
+        // type: 'areasplinerange',
         type: 'arearange',
         lineWidth: 0,
         linkedTo: ':previous',
@@ -229,7 +231,7 @@ var options = {
 };
 var graph = Highcharts.chart('containerr', options);
 
-window.setInterval(function () {onClick()}, 1000);
+// window.setInterval(function () {onClick()}, 1000);
 
 var i = 0;
 var tot = 0;

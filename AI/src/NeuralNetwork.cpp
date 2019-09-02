@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <deque>
+#include <fstream>
 #include "NeuralNetwork.hpp"
 
 NeuralNetwork::NeuralNetwork(NNConfiguration config) : config(config), gene(randomDevice()), doubleg(-1, 1) {
@@ -47,7 +48,8 @@ void NeuralNetwork::update() {
 
 			connectedTo->to->value += connectedTo->getWeight();
 			connectedTo->to->nbConnectedFrom++;
-			if (connectedTo->to->nbConnectedFrom == connectedTo->to->totalConnectedFrom) {
+	std::cout << "debug " << connectedTo->to->nbConnectedFrom << " " << connectedTo->to->totalConnectedFrom << std::endl;
+			if (connectedTo->to->nbConnectedFrom == connectedTo->to->totalConnectedFrom - 1) {
 				connectedTo->to->activate();
 				queue.push_back(connectedTo->to);
 			}
@@ -122,7 +124,7 @@ void NeuralNetwork::createRandomNode() {
 	int conn = intg(gene);
 	for (int i = 0; i < conn; ++i, ++it);
 
-	/// Creatting the new Node
+	/// Creating the new Node
 
 	/// Creating the new connection with TO to the previos
 
@@ -147,3 +149,47 @@ std::shared_ptr<Node> NeuralNetwork::getRandomNodeTo() {
 	return nodes[rand];
 }
 
+bool NeuralNetwork::save(std::string path) {
+	std::ofstream out;
+	out.open(path);
+	if (!out.is_open())
+		return false;
+
+	out << nodes.size();
+	for (auto &node : nodes) {
+		node.second->save(out);
+	}
+	out << connections.size();
+	for (auto &connection : connections) {
+		connection->save(out);
+	}
+
+	return true;
+}
+
+bool NeuralNetwork::load(std::string path) {
+	std::ifstream in;
+	in.open(path);
+	if (!in.is_open())
+		return false;
+
+	size_t size;
+	in >> size;
+	for (size_t i = 0; i < size; ++i) {
+		SNode tmp(new Node());
+		tmp->load(in);
+		nodes[tmp->id] = tmp;
+	}
+
+	in >> size;
+	for (size_t i = 0; i < size; ++i) {
+		SConnection tmp(new Connection());
+		tmp->load(in, *this);
+		connections.push_back(tmp);
+
+		nodes[tmp->from->id]->connectedTo.push_back(tmp);
+		nodes[tmp->to->id]->connectedFrom.push_back(tmp);
+	}
+
+	return false;
+}

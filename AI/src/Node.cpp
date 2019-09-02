@@ -21,3 +21,27 @@ double Node::getActivated() {
 	return activated;
 }
 
+void Node::save(std::ofstream &stream) {
+	stream << this->id;
+	stream << this->value;
+	stream << this->activated;
+
+	stream << this->nbConnectedTo;
+	stream << this->totalConnectedTo;
+
+	stream << this->nbConnectedFrom;
+	stream << this->totalConnectedFrom;
+}
+
+void Node::load(std::ifstream &stream) {
+	stream >> this->id;
+	stream >> this->value;
+	stream >> this->activated;
+
+	stream >> this->nbConnectedTo;
+	stream >> this->totalConnectedTo;
+
+	stream >> this->nbConnectedFrom;
+	stream >> this->totalConnectedFrom;
+}
+

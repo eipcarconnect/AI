@@ -9,6 +9,7 @@
 #include <memory>
 #include <list>
 #include <iostream>
+#include <fstream>
 
 class Connection;
 
@@ -17,9 +18,12 @@ public:
 	Node() = default;
 	Node(unsigned int id);
 
-	void activate();
+	void	activate();
 
 	double	getActivated();
+
+	void	save(std::ofstream &stream);
+	void	load(std::ifstream &stream);
 
 public:
 	unsigned int	id;

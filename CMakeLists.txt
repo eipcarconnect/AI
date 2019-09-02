@@ -35,6 +35,8 @@ find_package(Qt5WebSockets REQUIRED PATHS "C:\\Qt\\5.13.0\\mingw73_32\\lib\\cmak
 
 add_executable(Server
         Server/ServerMain.cpp
+        Server/server.cpp
+        Server/server.h
         )
 
 target_link_libraries(Server Qt5::Core)

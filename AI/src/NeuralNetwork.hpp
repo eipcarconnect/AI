@@ -22,11 +22,14 @@ public:
 	void				update();
 	std::vector<double>	getOutput();
 
+	bool 				save(std::string path);
+	bool 				load(std::string path);
+
 	/// Functions for learning
 	void				createRandomConnection();
 	void				createRandomNode();
 
-/// Tools to make code more readable
+	/// Tools to make code more readable
 private:
 	std::shared_ptr<Node> getRandomNodeFrom();
 	std::shared_ptr<Node> getRandomNodeTo();
