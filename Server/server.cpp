@@ -4,6 +4,13 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
+struct type{
+    type(int max, int min, int moy): max(max), min(min), moy(moy) {}
+    int max;
+    int min;
+    int moy;
+};
+
 Server::Server(QObject *parent) : QObject(parent), websocket(new QWebSocketServer(QStringLiteral("AI server progression"), QWebSocketServer::NonSecureMode)), tcp(new QTcpServer)
 {
     websocket->listen(QHostAddress::Any, 4344);
@@ -16,7 +23,13 @@ Server::Server(QObject *parent) : QObject(parent), websocket(new QWebSocketServe
     });
 
     connect(tcp.data(), &QTcpServer::newConnection, [this](){
-        this->tcp->nextPendingConnection();
+        auto trainingAI = this->tcp->nextPendingConnection();
+        connect(trainingAI, &QTcpSocket::readyRead, [trainingAI](){
+            std::cout << trainingAI->bytesAvailable() << std::endl;
+            auto buffer = trainingAI->readAll();
+            type *test = (type*)buffer.data();
+            std::cout << test->max << " " << test->min << " " << test->moy << std::endl;
+        });
         std::cout << "nouveau training ai" << std::endl;
     });
 }
