@@ -11,7 +11,7 @@ Connection::Connection(std::shared_ptr<Node> &from, std::shared_ptr<Node> &to, d
 }
 
 double Connection::getWeight() {
-	return from->getActivated() * weight;
+	return from->activated * weight;
 }
 
 void Connection::save(std::ofstream &stream) {

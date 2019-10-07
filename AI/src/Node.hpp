@@ -20,8 +20,6 @@ public:
 
 	void	activate();
 
-	double	getActivated();
-
 	void	save(std::ofstream &stream);
 	void	load(std::ifstream &stream);
 
@@ -33,10 +31,4 @@ public:
 
 	double	value;
 	double	activated;
-
-	unsigned int	nbConnectedTo;
-	unsigned int	totalConnectedTo;
-
-	unsigned int	nbConnectedFrom;
-	unsigned int	totalConnectedFrom;
 };

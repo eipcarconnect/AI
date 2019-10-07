@@ -13,7 +13,7 @@ class Node;
 class Connection {
 public:
 	Connection() = default;
-	Connection(std::shared_ptr<Node> &from, std::shared_ptr<Node> &to, double weight = 0.0);
+	Connection(std::shared_ptr<Node> &from, std::shared_ptr<Node> &to, double weight = 1.0);
 
 	double	getWeight();
 
@@ -25,7 +25,5 @@ public:
 	std::shared_ptr<Node>	to;
 
 	double	weight;
-
-
 };
 
