@@ -6,8 +6,10 @@
 #include <deque>
 #include <fstream>
 #include "NeuralNetwork.hpp"
+#include <algorithm>
 
 NeuralNetwork::NeuralNetwork(NNConfiguration config) : config(config), gene(randomDevice()), doubleg(-1, 1) {
+	brainCycle = 20;
 	id = config.input + config.bias + config.output;
 
 	for (unsigned int i = 0; i < id; ++i) {
@@ -20,11 +22,6 @@ void NeuralNetwork::setInput(std::vector<double> &newInputs) {
 	for (auto &node : nodes) {
 		node.second->value = 0;
 		node.second->activated = 0;
-		node.second->nbConnectedFrom = 0;
-		node.second->nbConnectedTo = 0;
-
-		node.second->totalConnectedFrom = node.second->connectedFrom.size();
-		node.second->totalConnectedTo = node.second->connectedTo.size();
 	}
 
 	for (int i = 0; i < newInputs.size(); ++i) {
@@ -33,14 +30,27 @@ void NeuralNetwork::setInput(std::vector<double> &newInputs) {
 }
 
 void NeuralNetwork::update() {
-	std::deque < std::shared_ptr < Node > > queue;
-	std::shared_ptr < Node >	elem;
+	std::vector<std::shared_ptr<Node>>	queue;
+	std::shared_ptr<Node>			elem;
 
 	for(int i = 0; i < config.input; ++i) {
-		queue.emplace_back(nodes[i]);
+		for(auto const &connection : nodes[i]->connectedTo)
+			queue.emplace_back(connection->to);
 	}
 
-	while(!queue.empty()) {
+
+	for(int i = 0; i < this->brainCycle && !queue.empty(); ++i) {
+		std::vector<std::shared_ptr<Node>> tmp;
+		for(auto &node : queue) {
+			node->activate();
+			for(auto const &next_connec : node->connectedTo) {
+				if(std::find(tmp.begin(), tmp.end(), next_connec->to) == tmp.end())
+					tmp.push_back(next_connec->to);
+			}
+			queue = tmp;
+		}
+	}
+	/*while(!queue.empty()) {
 		elem = queue.front();
 		queue.pop_front();
 
@@ -54,7 +64,7 @@ void NeuralNetwork::update() {
 				queue.push_back(connectedTo->to);
 			}
 		}
-	}
+	}*/
 }
 
 std::vector<double> NeuralNetwork::getOutput() {
@@ -66,6 +76,12 @@ std::vector<double> NeuralNetwork::getOutput() {
 	}
 
 	return outputs;
+}
+
+void NeuralNetwork::mutate() {
+	createRandomConnection();
+	createRandomNode();
+
 }
 
 void NeuralNetwork::createRandomConnection() {
@@ -121,16 +137,37 @@ void NeuralNetwork::createRandomNode() {
 	SNode		node(new Node(++id));
 
 	auto it = connections.begin();
-	int conn = intg(gene);
-	for (int i = 0; i < conn; ++i, ++it);
+	std::next(it, intg(gene));
 
 	/// Creating the new Node
+	SNode new_node(new Node());
+	SConnection new_connection(new Connection(new_node, (*it)->to));
+	new_connection->weight = 1.0;
 
-	/// Creating the new connection with TO to the previos
+	new_connection->from = new_node;
+	new_connection->to = (*it)->to;
+	new_connection->to->connectedFrom.remove(new_connection);
 
-	/// Changing the changed connection TO
+	(*it)->to = new_node;
 
+	new_node->connectedFrom.push_back((*it));
+	new_node->connectedTo.push_back(new_connection);
 
+	new_connection->to->connectedFrom.remove((*it));
+	this->connections.push_back(new_connection);
+	this->nodes[id] = new_node;
+
+}
+
+void NeuralNetwork::randomiseConnectionWeight() {
+	if (connections.empty())
+		return;
+	std::uniform_int_distribution<int>		intg(0, connections.size() - 1);
+	std::uniform_real_distribution<double>		doubleg(-1, 1);
+
+	auto it = connections.begin();
+	std::next(it, intg(gene));
+	(*it)->weight = doubleg(gene);
 }
 
 std::shared_ptr<Node> NeuralNetwork::getRandomNodeFrom() {
@@ -191,5 +228,5 @@ bool NeuralNetwork::load(std::string path) {
 		nodes[tmp->to->id]->connectedFrom.push_back(tmp);
 	}
 
-	return false;
+	return true;
 }
