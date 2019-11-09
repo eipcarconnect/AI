@@ -4,33 +4,48 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
-struct type{
-    type(int max, int min, int moy): max(max), min(min), moy(moy) {}
-    int max;
-    int min;
-    int moy;
-};
-
 Server::Server(QObject *parent) : QObject(parent), websocket(new QWebSocketServer(QStringLiteral("AI server progression"), QWebSocketServer::NonSecureMode)), tcp(new QTcpServer)
 {
     websocket->listen(QHostAddress::Any, 4344);
     tcp->listen(QHostAddress::Any, 4343);
 
     connect(websocket.data(), &QWebSocketServer::newConnection, [this](){
-        webClients.push_back(QSharedPointer<QWebSocket>(this->websocket->nextPendingConnection()));
-        std::cout << "nouvel web client" << std::endl;
-        startTimer(1000);
+        auto websock = this->websocket->nextPendingConnection();
+        webClients.push_back(QSharedPointer<QWebSocket>(websock));
+
+        for (auto stat : trainingStats) {
+            QJsonObject json;
+            json.insert("max", stat.max);
+            json.insert("min", stat.min);
+            json.insert("moy", stat.moy);
+            QJsonDocument doc(json);
+            QString strJson(doc.toJson(QJsonDocument::Compact));
+
+            websock->sendTextMessage(strJson);
+        }
+        std::cout << "new web client" << std::endl;
+        //startTimer(1000);
     });
 
     connect(tcp.data(), &QTcpServer::newConnection, [this](){
         auto trainingAI = this->tcp->nextPendingConnection();
-        connect(trainingAI, &QTcpSocket::readyRead, [trainingAI](){
-            std::cout << trainingAI->bytesAvailable() << std::endl;
+        connect(trainingAI, &QTcpSocket::readyRead, [this, trainingAI](){
             auto buffer = trainingAI->readAll();
-            type *test = (type*)buffer.data();
-            std::cout << test->max << " " << test->min << " " << test->moy << std::endl;
+            Stat *stat = (Stat*)buffer.data();
+            trainingStats.push_back(*stat);
+
+            QJsonObject json;
+            json.insert("max", stat->max);
+            json.insert("min", stat->min);
+            json.insert("moy", stat->moy);
+            QJsonDocument doc(json);
+            QString strJson(doc.toJson(QJsonDocument::Compact));
+
+            for (auto &web : webClients)
+                web->sendTextMessage(strJson);
+            std::cout << stat->max << " " << stat->min << " " << stat->moy << std::endl;
         });
-        std::cout << "nouveau training ai" << std::endl;
+        std::cout << "new training ai" << std::endl;
     });
 }
 

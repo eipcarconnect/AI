@@ -3,10 +3,26 @@
 //
 
 #include <iostream>
-#include "src/NeuralNetwork.hpp"
+#include "generation.h"
+#include <QCoreApplication>
 
-int main() {
-	NNConfiguration config(3, 1, 2);
+#include <QTcpSocket>
+#include <QHostAddress>
+
+int main(int argc, char *argv[])
+{
+    QCoreApplication a(argc, argv);
+
+    QTcpSocket socket;
+    socket.connectToHost(QHostAddress(QHostAddress::LocalHost), 4343);
+
+    Generation gen(&socket);
+
+    return a.exec();
+}
+
+
+/*int main(){
 	NeuralNetwork neat(config);
 	std::vector<double> in = {1, 0.26, -0.7825};
 
@@ -29,4 +45,4 @@ int main() {
 		std::cout << item << " ";
 	}
 	std::cout << std::endl;
-}
+}*/

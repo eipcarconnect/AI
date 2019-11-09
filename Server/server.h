@@ -7,6 +7,14 @@
 #include <QWebSocket>
 #include <QSharedPointer>
 
+
+struct Stat{
+    Stat(double max, double min, double moy): max(max), min(min), moy(moy) {}
+    double max;
+    double min;
+    double moy;
+};
+
 class Server : public QObject
 {
     Q_OBJECT
@@ -20,6 +28,8 @@ signals:
 public slots:
 
 private:
+    std::list<Stat>                     trainingStats;
+
     QSharedPointer<QWebSocketServer>    websocket;
     QSharedPointer<QTcpServer>          tcp;
 

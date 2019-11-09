@@ -14,6 +14,8 @@ project(AI)
 set(CMAKE_CXX_STANDARD 17)
 add_executable(AI
         AI/AIMain.cpp
+        AI/generation.cpp
+        AI/generation.h
         AI/src/Connection.cpp
         AI/src/Connection.hpp
         AI/src/Node.cpp
@@ -30,8 +32,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-#find_package(Qt5Core REQUIRED PATHS "C:\\Qt\\5.13.0\\mingw73_32\\lib\\cmake")
-#find_package(Qt5WebSockets REQUIRED PATHS "C:\\Qt\\5.13.0\\mingw73_32\\lib\\cmake")
+find_package(Qt5Core REQUIRED PATHS "C:\\Qt\\5.13.0\\mingw73_32\\lib\\cmake")
+find_package(Qt5WebSockets REQUIRED PATHS "C:\\Qt\\5.13.0\\mingw73_32\\lib\\cmake")
 
 add_executable(Server
         Server/ServerMain.cpp
@@ -39,5 +41,7 @@ add_executable(Server
         Server/server.h
         )
 
-#target_link_libraries(Server Qt5::Core)
-#target_link_libraries(Server Qt5::WebSockets)
+target_link_libraries(Server Qt5::Core)
+target_link_libraries(Server Qt5::WebSockets)
+target_link_libraries(AI Qt5::Core)
+target_link_libraries(AI Qt5::WebSockets)

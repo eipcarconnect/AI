@@ -40,13 +40,12 @@ public:
 	NNConfiguration		config;
 	size_t			id;
 	size_t 			brainCycle;
+	double          fitnesse;
 
 	std::unordered_map<unsigned int, std::shared_ptr<Node>>	nodes;
 	std::list<std::shared_ptr<Connection>>			connections;
 
-	/// Variables for random numbers
-	std::random_device	randomDevice;
-	std::mt19937		gene;
+    /// Variables for random numbers
 	std::uniform_real_distribution<double>	doubleg;
 };
 

@@ -8,7 +8,15 @@
 #include "NeuralNetwork.hpp"
 #include <algorithm>
 
-NeuralNetwork::NeuralNetwork(NNConfiguration config) : config(config), gene(randomDevice()), doubleg(-1, 1) {
+std::mt19937 &getRandom() {
+    static std::random_device	randomDevice;
+    static std::mt19937		gene(randomDevice());
+
+    return gene;
+}
+
+NeuralNetwork::NeuralNetwork(NNConfiguration config) : config(config), /*gene(randomDevice()),*/ doubleg(-1, 1) {
+    fitnesse = 0.0;
 	brainCycle = 20;
 	id = config.input + config.bias + config.output;
 
@@ -81,7 +89,7 @@ std::vector<double> NeuralNetwork::getOutput() {
 void NeuralNetwork::mutate() {
 	createRandomConnection();
 	createRandomNode();
-
+    randomiseConnectionWeight();
 }
 
 void NeuralNetwork::createRandomConnection() {
@@ -122,7 +130,7 @@ void NeuralNetwork::createRandomConnection() {
 
 	}
 
-	std::shared_ptr<Connection> newConnection(new Connection(from, to, doubleg(gene)));
+    std::shared_ptr<Connection> newConnection(new Connection(from, to, doubleg(getRandom())));
 	newConnection->from->connectedTo.emplace_back(newConnection);
 	newConnection->to->connectedFrom.emplace_back(newConnection);
 	connections.emplace_back(newConnection);
@@ -137,7 +145,7 @@ void NeuralNetwork::createRandomNode() {
 	SNode		node(new Node(++id));
 
 	auto it = connections.begin();
-	std::next(it, intg(gene));
+    std::next(it, intg(getRandom()));
 
 	/// Creating the new Node
 	SNode new_node(new Node());
@@ -166,13 +174,13 @@ void NeuralNetwork::randomiseConnectionWeight() {
 	std::uniform_real_distribution<double>		doubleg(-1, 1);
 
 	auto it = connections.begin();
-	std::next(it, intg(gene));
-	(*it)->weight = doubleg(gene);
+    std::next(it, intg(getRandom()));
+    (*it)->weight = doubleg(getRandom());
 }
 
 std::shared_ptr<Node> NeuralNetwork::getRandomNodeFrom() {
 	std::uniform_int_distribution<int>		intg(0, nodes.size() - config.output - 1);
-	int rand = intg(gene);
+    int rand = intg(getRandom());
 
 	if (rand >= config.input + config.bias)
 		return nodes[rand + config.output];
@@ -181,7 +189,7 @@ std::shared_ptr<Node> NeuralNetwork::getRandomNodeFrom() {
 
 std::shared_ptr<Node> NeuralNetwork::getRandomNodeTo() {
 	std::uniform_int_distribution<int>		intg(config.input + config.bias, nodes.size() - 1);
-	int rand = intg(gene);
+    int rand = intg(getRandom());
 
 	return nodes[rand];
 }

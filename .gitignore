@@ -1,12 +1,12 @@
 .idea
 InputGen/inputs
 cmake-build-debug
-build-Server-Desktop*
 AI/QTAI/build-ai-Desktop_Qt_5_13_0_MinGW_32_bit-Debug
 Server/Server.pro.use*
 inputs.zip
 inputs
-
+AI/*.pro.u*
+build*
 
 # Prerequisites
 *.d
