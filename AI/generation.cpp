@@ -5,20 +5,13 @@
 #include <iostream>
 #include <memory>
 
-Generation::Generation(QTcpSocket *tcp)
+Generation::Generation(QTcpSocket *tcp, std::string name): name(name)
 {
     auto timer = new QTimer(this);
 
     createGenaration();
-    auto it = generation.begin();
-    std::cout << generation.size() << std::endl << std::endl;
-    for (const auto &elem : (*it)->connections)
-        std::cout << elem->weight << std::endl;
-    std::cout << std::endl;
-    ++it;
-    for (const auto &elem : (*it)->connections)
-        std::cout << elem->weight << std::endl;
     connect(timer, &QTimer::timeout, [tcp, this](){
+        //TrainingNetMessage tmp("stat", 2.0, -2.0, 0.0);
         Stat tmp(2.0, -2.0, 0.0);
         std::vector<double> in = {1, 0.26, -0.7825};
 
@@ -30,20 +23,41 @@ Generation::Generation(QTcpSocket *tcp)
             elem->fitnesse = out[0] + out[1];
         }
 
+        generation.sort([](std::shared_ptr<NeuralNetwork> first, std::shared_ptr<NeuralNetwork> second){
+            return first->fitnesse > second->fitnesse;
+        });
+
         for (auto &elem : generation) {
+            /*if (elem->fitnesse > tmp.stat.max)
+                tmp.stat.max = elem->fitnesse;
+            if (elem->fitnesse < tmp.stat.min)
+                tmp.stat.min = elem->fitnesse;
+            tmp.stat.moy += elem->fitnesse;*/
             if (elem->fitnesse > tmp.max)
                 tmp.max = elem->fitnesse;
             if (elem->fitnesse < tmp.min)
                 tmp.min = elem->fitnesse;
             tmp.moy += elem->fitnesse;
         }
+        //tmp.stat.moy = tmp.stat.moy / 1000.0;
         tmp.moy = tmp.moy / 1000.0;
+        //tcp->write((const char *) &tmp, sizeof(TrainingNetMessage));
         tcp->write((const char *) &tmp, sizeof(Stat));
 
         generation.sort([](const std::shared_ptr<NeuralNetwork> &first, const std::shared_ptr<NeuralNetwork> &second){return first->fitnesse < second->fitnesse;});
         for (auto &elem : generation) {
             if (elem->fitnesse < (*generation.begin())->fitnesse - 0.4)
                 elem->randomiseConnectionWeight();
+        }
+    });
+    connect(tcp, &QTcpSocket::readyRead, [tcp, this](){
+        auto buffer = QString(tcp->readAll()).toStdString();
+        std::cout << "Received message from SERVER: " << buffer<< std::endl;
+
+        if (buffer == "save_ann") {
+            auto best = generation.front();
+
+            best->save("test.ann");
         }
     });
     timer->start(1000);
@@ -71,5 +85,5 @@ void Generation::createGenaration(int size) {
 
 /// TODO: implement load Data
 void Generation::loadData(std::string path) {
-
+    Q_UNUSED(path)
 }

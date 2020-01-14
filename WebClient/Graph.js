@@ -233,7 +233,7 @@ var graph = Highcharts.chart('containerr', options);
 
 // window.setInterval(function () {onClick()}, 1000);
 
-var i = 0;
+/*var i = 0;
 var tot = 0;
 var onClick = function () {
     var tmp = [];
@@ -247,4 +247,4 @@ var onClick = function () {
     options.series[0].data.push( tmp2);
     ++i;
     graph.update(options);
-};
+};*/

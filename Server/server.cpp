@@ -1,5 +1,6 @@
 #include "server.h"
 #include <iostream>
+#include <fstream>
 
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -9,9 +10,20 @@ Server::Server(QObject *parent) : QObject(parent), websocket(new QWebSocketServe
     websocket->listen(QHostAddress::Any, 4344);
     tcp->listen(QHostAddress::Any, 4343);
 
+    /// On new client connection
+
     connect(websocket.data(), &QWebSocketServer::newConnection, [this](){
         auto websock = this->websocket->nextPendingConnection();
-        webClients.push_back(QSharedPointer<QWebSocket>(websock));
+        webClients.push_back(websock);
+        connect(websock, &QWebSocket::textMessageReceived, [this](const QString &message){
+            auto msg = message.toStdString();
+            std::cout << "Received from WEB CLIENT: " << msg << std::endl;
+
+            if (msg == "save_ann") {
+                for (auto &web : trainingServers)
+                    web->write(QString("save_ann").toUtf8());
+            }
+        });
 
         for (auto stat : trainingStats) {
             QJsonObject json;
@@ -24,53 +36,44 @@ Server::Server(QObject *parent) : QObject(parent), websocket(new QWebSocketServe
             websock->sendTextMessage(strJson);
         }
         std::cout << "new web client" << std::endl;
-        //startTimer(1000);
     });
+
+
+    /// On new training server connection
 
     connect(tcp.data(), &QTcpServer::newConnection, [this](){
         auto trainingAI = this->tcp->nextPendingConnection();
+        trainingServers.push_back(trainingAI);
         connect(trainingAI, &QTcpSocket::readyRead, [this, trainingAI](){
             auto buffer = trainingAI->readAll();
-            Stat *stat = (Stat*)buffer.data();
-            trainingStats.push_back(*stat);
+            std::cout << "BONSOIR: " << QString(buffer).toStdString().size() << " " << QString(buffer).toStdString() << std::endl;
+            //TrainingNetMessage *message = (TrainingNetMessage*)buffer.data();
+            Stat *message = (Stat*)buffer.data();
 
+            //if (message->type == "stat") {
+            /*trainingStats.push_back(message->stat);
             QJsonObject json;
-            json.insert("max", stat->max);
-            json.insert("min", stat->min);
-            json.insert("moy", stat->moy);
-            QJsonDocument doc(json);
-            QString strJson(doc.toJson(QJsonDocument::Compact));
+            json.insert("max", message->stat.max);
+            json.insert("min", message->stat.min);
+            json.insert("moy", message->stat.moy);*/
+            trainingStats.push_back(*message);
+            QJsonObject json;
+            json.insert("max", message->max);
+            json.insert("min", message->min);
+            json.insert("moy", message->moy);
+                QJsonDocument doc(json);
+                QString strJson(doc.toJson(QJsonDocument::Compact));
 
-            for (auto &web : webClients)
-                web->sendTextMessage(strJson);
-            std::cout << stat->max << " " << stat->min << " " << stat->moy << std::endl;
+                for (auto &web : webClients)
+                    web->sendTextMessage(strJson);
+            /*}
+            else if (message->type == "save") {
+                std::cout << "Saving new file: " << message->save.name << std::endl;
+                std::ofstream outfile(message->save.name);
+                outfile << message->save.file;
+                outfile.close();
+            }*/
         });
         std::cout << "new training ai" << std::endl;
     });
-}
-
-void Server::timerEvent(QTimerEvent *)
-{
-	static int moy = 100;
-    static int i = 0;
-    QJsonObject json;
-
-    json.insert("label", i);
-    ++i;
-    int max = rand() % 100 + moy;
-    int min = moy - (rand() % 100);
-    int nbmin = rand() % 8 + 1;
-    int nbmax = rand() % 10 + 1;
-    int moye = (min * nbmin + max * nbmax) / (nbmin + nbmax) ;
-    moy = moye;
-    json.insert("max", max);
-    json.insert("min", min);
-    json.insert("moy", moye);
-
-    QJsonDocument doc(json);
-    QString strJson(doc.toJson(QJsonDocument::Compact));
-    for(auto webclient : webClients) {
-        webclient->sendTextMessage(doc.toJson(QJsonDocument::Compact));
-        std::cout << moye <<' ' << max<< ' ' << min << std::endl;
-    }
 }

@@ -2,20 +2,20 @@
 var websocket = new WebSocket("ws://localhost:4344");
 
 websocket.onopen = function () {
-    console.log("DONE");
+    console.log("Connected to Server");
 };
 
 websocket.onmessage = function (ev) {
     console.log(ev);
     var obj = JSON.parse(ev.data);
-    var tmp = [];
-    tmp.push( obj.label );
-    tmp.push( obj.min );
-    tmp.push( obj.max );
+    var tmp = [obj.label , obj.min , obj.max ];
     options.series[1].data.push(tmp);
 
     var tmp2 = [ obj.label , obj.moy ];
     options.series[0].data.push( tmp2);
-    ++i;
     graph.update(options);
+};
+
+var onClick = function () {
+    websocket.send("save_ann")
 };

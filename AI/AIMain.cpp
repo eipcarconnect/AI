@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     QTcpSocket socket;
     socket.connectToHost(QHostAddress(QHostAddress::LocalHost), 4343);
 
-    Generation gen(&socket);
+    Generation gen(&socket, "EIP_AI");
 
     return a.exec();
 }

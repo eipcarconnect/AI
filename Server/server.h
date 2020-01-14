@@ -15,13 +15,27 @@ struct Stat{
     double moy;
 };
 
+struct Save {
+    Save(std::string name, std::string file): name(name), file(file) {}
+    std::string name;
+    std::string file;
+};
+
+struct TrainingNetMessage {
+    TrainingNetMessage(std::string type, double max, double min, double moy): type(type), stat(max, min, moy), save("", "") {}
+    TrainingNetMessage(std::string type, std::string name, std::string file): type(type), stat(0, 0, 0), save(name, file) {}
+    std::string type;
+    //union {
+        Stat stat;
+        Save save;
+    //};
+};
+
 class Server : public QObject
 {
     Q_OBJECT
 public:
     explicit Server(QObject *parent = nullptr);
-
-    void timerEvent(QTimerEvent *) override;
 
 signals:
 
@@ -33,7 +47,8 @@ private:
     QSharedPointer<QWebSocketServer>    websocket;
     QSharedPointer<QTcpServer>          tcp;
 
-    QList<QSharedPointer<QWebSocket>>   webClients;
+    QList<QWebSocket*>   webClients;
+    QList<QTcpSocket*>   trainingServers;
 };
 
 #endif // SERVER_H
