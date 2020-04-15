@@ -32,8 +32,12 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt5Core REQUIRED PATHS "C:\\Qt\\5.13.0\\mingw73_32\\lib\\cmake")
-find_package(Qt5WebSockets REQUIRED PATHS "C:\\Qt\\5.13.0\\mingw73_32\\lib\\cmake")
+#find_package(Qt5Core REQUIRED PATHS "C:\\Qt\\5.13.0\\mingw73_32\\lib\\cmake")
+find_package(Qt5Core REQUIRED PATHS "/home/seb/Qt/5.13.1/gcc_64/lib/cmake")
+#find_package(Qt5WebSockets REQUIRED PATHS "C:\\Qt\\5.13.0\\mingw73_32\\lib\\cmake")
+find_package(Qt5WebSockets REQUIRED PATHS "/home/seb/Qt/5.13.1/gcc_64/lib/cmake")
+
+find_package(cpprestsdk REQUIRED)
 
 add_executable(Server
         Server/ServerMain.cpp
@@ -45,3 +49,11 @@ target_link_libraries(Server Qt5::Core)
 target_link_libraries(Server Qt5::WebSockets)
 target_link_libraries(AI Qt5::Core)
 target_link_libraries(AI Qt5::WebSockets)
+
+project(ANN_API)
+set(CMAKE_CXX_STANDARD 17)
+
+add_executable(ANN_API
+        ANN_API/APIMain.cpp ANN_API/API.cpp ANN_API/API.hpp)
+
+target_link_libraries(ANN_API PRIVATE cpprestsdk::cpprest)
