@@ -37,7 +37,8 @@ find_package(Qt5Core REQUIRED PATHS "/home/seb/Qt/5.13.1/gcc_64/lib/cmake")
 #find_package(Qt5WebSockets REQUIRED PATHS "C:\\Qt\\5.13.0\\mingw73_32\\lib\\cmake")
 find_package(Qt5WebSockets REQUIRED PATHS "/home/seb/Qt/5.13.1/gcc_64/lib/cmake")
 
-find_package(cpprestsdk REQUIRED)
+find_package(Boost REQUIRED system)
+find_package(cpprestsdk REQUIRED PATHS "/usr/lib/x86_64-linux-gnu/cmake")
 
 add_executable(Server
         Server/ServerMain.cpp
@@ -54,6 +55,13 @@ project(ANN_API)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(ANN_API
-        ANN_API/APIMain.cpp ANN_API/API.cpp ANN_API/API.hpp)
+        ANN_API/APIMain.cpp ANN_API/API.cpp ANN_API/API.hpp
+        AI/src/Connection.cpp
+        AI/src/Connection.hpp
+        AI/src/Node.cpp
+        AI/src/Node.hpp
+        AI/src/NeuralNetwork.cpp
+        AI/src/NeuralNetwork.hpp
+        AI/src/NeuralData.hpp Helper/Config.hpp)
 
-target_link_libraries(ANN_API PRIVATE cpprestsdk::cpprest)
+target_link_libraries(ANN_API PRIVATE cpprestsdk::cpprest ${Boost_SYSTEM_LIBRARY})

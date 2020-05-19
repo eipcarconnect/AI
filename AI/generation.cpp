@@ -1,4 +1,5 @@
 #include "generation.h"
+#include "../Helper/Config.hpp"
 
 #include <QTimer>
 #include <QTcpSocket>
@@ -40,7 +41,7 @@ Generation::Generation(QTcpSocket *tcp, std::string name): name(name)
             tmp.moy += elem->fitnesse;
         }
         //tmp.stat.moy = tmp.stat.moy / 1000.0;
-        tmp.moy = tmp.moy / 1000.0;
+        tmp.moy = tmp.moy / this->size;
         //tcp->write((const char *) &tmp, sizeof(TrainingNetMessage));
         tcp->write((const char *) &tmp, sizeof(Stat));
 
@@ -57,16 +58,25 @@ Generation::Generation(QTcpSocket *tcp, std::string name): name(name)
         if (buffer == "save_ann") {
             auto best = generation.front();
 
-            best->save("test.ann");
+            best->save(ANN_PATH);
+
+            std::ifstream t(ANN_PATH);
+            std::string str((std::istreambuf_iterator<char>(t)),
+                            std::istreambuf_iterator<char>());
+            TrainingNetMessage tmp(MessageType::Save, this->name, str);
+            std::cout << "LOOK AT ME" << str << std::endl;
         }
     });
     timer->start(1000);
 }
 
 void Generation::createGenaration(int size) {
-    NNConfiguration config(3, 1, 2);
+    this->size = size;
+    NNConfiguration config(INPUT_SIZE,
+                           BIAS_SIZE,
+                           OUTPUT_SIZE);
 
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < this->size; ++i) {
         std::shared_ptr<NeuralNetwork> tmp (std::make_shared<NeuralNetwork>(config));
 
         tmp->createRandomConnection();

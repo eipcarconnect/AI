@@ -16,6 +16,7 @@ public:
 
 private:
     std::string name;
+    int size = 0;
     std::list<std::shared_ptr<NeuralNetwork>> generation;
 };
 
@@ -27,19 +28,25 @@ struct Stat{
 };
 
 struct Save {
-    Save(std::string name, std::string file): name(name), file(file) {}
+    Save(std::string name, std::string file): sizeName(name.size()), sizeFile(file.size()), name(name), file(file) {}
+    int sizeName;
+    int sizeFile;
     std::string name;
     std::string file;
 };
 
+enum class MessageType {
+    Stat,
+    Save
+};
+
 struct TrainingNetMessage {
-    TrainingNetMessage(std::string type, double max, double min, double moy): type(type), stat(max, min, moy), save("", "") {}
-    TrainingNetMessage(std::string type, std::string name, std::string file): type(type), stat(0, 0, 0), save(name, file) {}
-    std::string type;
-    //union {
-        Stat stat;
-        Save save;
-    //};
+    TrainingNetMessage(MessageType type, double max, double min, double moy): type(type), stat(max, min, moy), save("", "") {}
+    TrainingNetMessage(MessageType type, std::string name, std::string file): type(type), stat(0, 0, 0), save(name, file) {}
+
+    MessageType type;
+    Stat stat;
+    Save save;
 };
 
 #endif // GENERATION_H

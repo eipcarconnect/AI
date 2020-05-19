@@ -6,6 +6,8 @@
 #define ANN_API_API_HPP
 
 #include <cpprest/http_listener.h>
+#include <thread>
+#include "../AI/src/NeuralNetwork.hpp"
 
 class API {
 public:
@@ -13,8 +15,13 @@ public:
 	pplx::task<void>open(){return m_listener.open();}
 	pplx::task<void>close(){return m_listener.close();}
 
+	void update();
+
 private:
 	web::http::experimental::listener::http_listener m_listener;
+    NNConfiguration config;
+	NeuralNetwork ann;
+    std::thread thread;
 };
 
 
