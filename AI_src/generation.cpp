@@ -6,7 +6,7 @@
 #include <iostream>
 #include <memory>
 
-Generation::Generation(QTcpSocket *tcp, std::string name): name(name)
+Generation::Generation(QTcpSocket *tcp, std::string name):QObject(), name(name)
 {
     auto timer = new QTimer(this);
 

@@ -3,9 +3,11 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include <QtCore/QObjectCleanupHandler>
 #include "src/NeuralNetwork.hpp"
+#include "../InputGen_src/InputGeneration.hpp"
 
-class Generation : QObject
+class Generation : public QObject
 {
     Q_OBJECT
 public:

@@ -7,7 +7,7 @@
 
 #include <cpprest/http_listener.h>
 #include <thread>
-#include "../AI/src/NeuralNetwork.hpp"
+#include "../AI_src/src/NeuralNetwork.hpp"
 
 class API {
 public:

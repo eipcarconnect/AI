@@ -1,7 +1,7 @@
 .idea
 InputGen/inputs
 cmake-build-debug
-AI/QTAI/build-ai-Desktop_Qt_5_13_0_MinGW_32_bit-Debug
+AI_src/QTAI/build-ai-Desktop_Qt_5_13_0_MinGW_32_bit-Debug
 Server/Server.pro.use*
 inputs.zip
 inputs

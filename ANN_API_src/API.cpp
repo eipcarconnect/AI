@@ -5,7 +5,7 @@
 #include <iomanip>
 #include "API.hpp"
 #include "../Helper/Config.hpp"
-#include "../AI/src/NeuralData.hpp"
+#include "../AI_src/src/NeuralData.hpp"
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
