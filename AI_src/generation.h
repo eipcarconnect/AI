@@ -11,7 +11,9 @@ class Generation : public QObject
 {
     Q_OBJECT
 public:
+    Generation(QObject *parent = 0): QObject(parent) {};
     Generation(QTcpSocket *tcp, std::string name);
+    virtual ~Generation() {};
 
     void createGenaration(int size = 1000);
     void loadData(std::string path);
