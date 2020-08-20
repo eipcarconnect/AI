@@ -10,7 +10,7 @@ Generation::Generation(QTcpSocket *tcp, std::string name):QObject(0), name(name)
 {
     auto timer = new QTimer(this);
 
-    createGenaration();
+    createGenaration(2000);
     connect(timer, &QTimer::timeout, [tcp, this](){
         //TrainingNetMessage tmp("stat", 2.0, -2.0, 0.0);
         Stat tmp(2.0, -2.0, 0.0);

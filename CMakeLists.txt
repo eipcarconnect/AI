@@ -32,9 +32,9 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 #find_package(Qt5Core REQUIRED PATHS "C:\\Qt\\5.13.0\\mingw73_32\\lib\\cmake")
-find_package(Qt5Core REQUIRED PATHS "/home/seb/Qt/5.13.1/gcc_64/lib/cmake")
+find_package(Qt5Core REQUIRED)# PATHS "/home/seb/Qt/5.13.1/gcc_64/lib/cmake")
 #find_package(Qt5WebSockets REQUIRED PATHS "C:\\Qt\\5.13.0\\mingw73_32\\lib\\cmake")
-find_package(Qt5WebSockets REQUIRED PATHS "/home/seb/Qt/5.13.1/gcc_64/lib/cmake")
+find_package(Qt5WebSockets REQUIRED)# PATHS "/home/seb/Qt/5.13.1/gcc_64/lib/cmake")
 
 find_package(Boost REQUIRED system)
 find_package(cpprestsdk REQUIRED PATHS "/usr/lib/x86_64-linux-gnu/cmake")
@@ -63,4 +63,4 @@ add_executable(ANN_API
         AI_src/src/NeuralNetwork.hpp
         AI_src/src/NeuralData.hpp Helper/Config.hpp)
 
-target_link_libraries(ANN_API PRIVATE cpprestsdk::cpprest ${Boost_SYSTEM_LIBRARY})
+target_link_libraries(ANN_API PRIVATE cpprestsdk::cpprest ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
